@@ -1,0 +1,116 @@
+
+#include "pch.h"
+#include <iostream>
+using namespace std;
+#include<fstream>
+#include<string>
+const int allsize = 250;
+void input_matrix(char**matrix, char*str, int c, int s)//matrix- новый массив . str- изначальная строка. с- самое длинное слово . s-длина str
+{
+	int im = 0, jm = 0;
+	for (int i(0); i < s; i++)
+	{
+		if (str[i] != ' ')
+		{
+			matrix[im][jm] = str[i]; 
+			jm++;
+		}
+		else if (str[i] == ' ')
+		{
+			while (jm != c)
+			{
+				matrix[im][jm] = '\0';
+				jm++;
+			}
+			im++;
+			jm = 0;
+		}
+	}
+	while (jm != c)
+			{
+				matrix[im][jm] = '\0';
+				jm++;
+			}
+}
+int Size_of_String(char*str)
+{
+	int Size = 0;
+	while (str[Size] != '\0')
+	{
+		Size++;
+	}
+	return Size;
+}
+int count_word(char*str, int n)// в качестве n передаем длину s - длину str. Считаем сколько слов в тексте 
+{
+	int counter = 0;
+	bool b = true;
+	for (int i(0); i < n; i++)
+	{
+		if (isalpha(str[i]))// isalpha-проверка, является ли символ буквой альфавита
+		{
+			if (b) {
+				counter++;
+				b = false;
+			}
+		}
+		else b = true;
+	}
+	return counter;
+}
+int count_longest(char*s, int n, int word)
+{
+	int sum = 0, summax = 0;
+	for (int i(0); i < n; i++)
+	{
+		if (isalpha(s[i]))
+		{
+			sum++;
+		}
+		else if (s[i] == ' ')
+		{
+			if (sum > summax)
+				summax = sum;
+			sum = 0;
+		}
+	}
+	return summax;
+}
+void Output_matrix(int r, int c, char**matrix)
+{
+	for (int i(0); i < r; i++)
+	{
+		for (int j(0); j < c; j++)
+		{
+			cout << matrix[i][j] << " ";
+		}
+		cout << endl;
+	}
+}
+int main()
+{	
+	char*str = new char[allsize];// сюда записываю весь текст из файла
+	fstream fs;
+	string path = "text_for_lab_6_try2.txt";
+	fs.open(path, fstream::out| fstream::in);
+	if (!fs.is_open())
+	{
+		cout << "error, file wasn't open correctly" << endl;
+	}
+	else
+	{
+		cout << "file was opened correctly" << endl;
+			fs.getline(str, 250);// пока не достигнут конец файла класть очередную строку в переменную(str)
+		int s = Size_of_String(str);// s - длина str
+		int words = count_word(str, s);// количество слов в строке
+		int letters = count_longest(str, s, words);// количество букв в самом длинном слове
+		char**matrix = new char*[words];
+		for (int i(0); i < words; i++)
+		{
+			matrix[i] = new char[letters];
+		}
+		input_matrix(matrix, str, letters, s);
+		Output_matrix(words, letters, matrix);
+		cout << endl;
+	}
+}
