@@ -1,0 +1,99 @@
+/* Вилучити з тексту всі слова, які містять у собі паліндроми довжиною не менші
+за n. Записати результуючий текст у інший файл.*/
+
+#include "pch.h"
+#include <iostream>
+#include<fstream>
+#include<string>
+using namespace std;
+const int allsize = 300;
+
+bool is_palindrome(char**matrix, int row, int col) {
+	int n = strlen(matrix[row]);
+	for (int i = 0; i < n / 2; i++)
+		if (matrix[i] != matrix[n - 1 - i])
+			return false;
+	return true;
+}
+void deleting(char);
+void perenos(char*s, char**str)// из s в str
+{
+
+	int k = 0;
+	for (int i = 0; s[k] != '\0'; i++)
+	{
+		int stop = 0;
+		for (int j = 0; stop == 0; j++)
+		{
+			if (s[k] != ' ')
+			{
+				str[i][j] = s[k];
+				k++;
+			}
+			else
+			{
+				str[i][j] = ' ';
+				str[i][j + 1] = '\0';
+				stop = 1;
+				k++;
+			}
+		}
+	}
+
+
+}
+int main()
+{
+	int n;
+	cout << "n= ";
+	cin >> n;
+	fstream fs;
+	string path = "text_for_lab_6.txt";
+	fs.open(path, fstream::app | fstream::out | fstream::in);
+	char s;// сюда считываем весь текст
+	if (!fs.is_open())
+	{
+		cout << "error, file wasn't open correctly" << endl;
+	}
+	else
+	{
+		cout << "file was opened correctly" << endl;
+
+		fs.getline(s, sizeof(s));// пока не достигнут конец файла класть очередную строку в переменную(s)
+		int words = 0;
+		for (int i = 0; i < sizeof(s); i++)
+		{
+			if (s[i] != ' ')  
+			{
+				words++;
+			}
+			else if (s[i] == '\0')
+			{
+				
+			}
+
+		}
+		int size = 200;
+		char **str = new char*[words];
+		for (int i = 0; i < words; i++)
+		{
+			str[i] = new char[size];// массив куда ложим все изначальные слова из текста
+		}
+		char **nov_mas = new char*[words];
+
+		for (int i = 0; i < words; i++)
+		{
+			nov_mas[i] = new char[size];// массив куда ложим все изначальные слова из текста
+		}
+
+		perenos(s, str);
+		
+	for (int i = 0; i < words; i++)
+	{
+		cout << str[i]<<endl;
+	}
+	cout << is_palindrome(str, 0, size);
+	}
+	fs.close();
+
+}
