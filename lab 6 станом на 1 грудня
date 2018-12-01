@@ -1,0 +1,223 @@
+/* Вилучити з тексту всі слова, які містять у собі паліндроми довжиною не менші
+за n. Записати результуючий текст у інший файл.*/
+#include "pch.h"
+#include <iostream>
+using namespace std;
+#include<fstream>
+#include<string>
+const int allsize = 250;
+void input_matrix(char**matrix, char*str, int c, int s)//matrix- новый массив . str- изначальная строка. с- самое длинное слово . s-длина str
+//передать words, когда im=words+1 поставить \0 после всех букв
+{
+	int im = 0, jm = 0;
+	for (int i(0); i < s; i++)
+	{
+		
+			if (str[i] != ' ')
+			{
+				matrix[im][jm] = str[i];
+				jm++;
+			}
+			else
+			{
+				matrix[im][jm] = '\0';
+				im++;
+				jm = 0;
+			}
+			/*else if (str[i] == ' ')
+			{
+				matrix[im][jm] = '\0';
+				
+				im++;
+				jm = 0;
+			}
+			else if (str[i] == '\0')
+			{
+				matrix[im][jm] = '\0';
+				jm = 0;
+			}*/
+		
+	}
+}
+void input_matrix_for_x2size_massiv(string*matrix2, char**str, int i)//matrix- новый массив . str- изначальная строка. с- самое длинное слово . s-длина str
+{
+	 // записать символы из массива в строку, а потом уже передать .....хотя и так сойдет
+	matrix2[i] = str[i];
+}
+
+int Size_of_String(char*str)
+{
+	int Size = 0;
+	while (str[Size] != '\0')
+	{
+		Size++;
+	}
+	return Size;
+}
+int count_word(char*str, int n)// в качестве n передаем длину s - длину str. Считаем сколько слов в тексте 
+{
+	int counter = 0;
+	bool b = true;
+	for (int i(0); i < n; i++)
+	{
+		if (isalpha(str[i]))// isalpha-проверка, является ли символ буквой альфавита
+		{
+			if (b) {
+				counter++;
+				b = false;
+			}
+		}
+		else b = true;
+	}
+	return counter;
+}
+int count_longest(char*s, int n, int word)
+{
+	int sum = 0, summax = 0;
+	for (int i(0); i < n; i++)
+	{
+		if (isalpha(s[i]))
+		{
+			sum++;
+		}
+		else if (s[i] == ' ')
+		{
+			if (sum > summax)
+				summax = sum;
+			sum = 0;
+		}
+	}
+	return summax;
+}
+void Output_matrix(int r, int c, char**matrix)
+{
+	for (int i(0); i < r; i++)
+	{
+		for (int j(0); j < c; j++)//j<длинна всего рядочка минус длинна рядочек 1 минус количество пробелов()
+		/*	//for(int k = 0 ; k<rows;k++)
+		{
+		int ourlenght = 0;// ourlenght- номер массива на котором нужно поставить \0 
+		ourlenght= strlen 
+		}
+		*/
+		{
+			cout << matrix[i][j] << " ";
+		}
+		cout << endl;
+	}
+}
+bool is_palindrome(char**matrix, int row, int col,int i) {
+	
+
+		int n = strlen(matrix[i]);
+		int k = 0;
+		for (int j = 0; j < n / 2; j++)
+		{
+			if (matrix[j] == matrix[n - 1 - j])// оно же считает все эл массива, а нужно чтоб считало с конца слова !!!!!!!!!!!!!!!
+			{
+				return true;
+			}
+			else
+			{
+				return false;  break;
+			}
+		}
+	
+}
+bool less_or_more(char**matrix, int i, int cols, int n)//матрица 1 с чарами .передать матрицу ,итератор(выполняет роль строчек) и количество столбиков. n-задется по условию
+{
+	int lenght = strlen(matrix[i]);
+	if (lenght < n)
+	{
+		return true;//если true-значит меньше    //если меньше- запись в новый массив, если больше- проверить на палиндром
+	}
+	return false;
+}
+void deleting_and_writing(string*matrix2, char**matrix, int words, int letters, int n)
+{
+
+	for (int j = 0, i = 0; j < words; j++, i++)// там всего три слова... почему оно идет дальше? поменял с letters на words ( вроде починил)
+	{
+		if (less_or_more(matrix, j, letters, n) == 1)
+		{
+			input_matrix_for_x2size_massiv(matrix2, matrix, i);
+		}
+		else
+		{
+			if (is_palindrome(matrix, words, letters,i)==0)
+			{
+				input_matrix_for_x2size_massiv(matrix2, matrix, i);
+			}
+			else
+			{
+				matrix2[i] = "";
+			}
+		}
+	}
+}
+int main()
+{
+	int n;
+	cout << "n= ";
+	cin >> n;
+	char*str = new char[allsize];// сюда записываю весь текст из файла
+	fstream fs;
+	string path = "text_for_lab_6_try2.txt";
+	fs.open(path, fstream::out | fstream::in);
+	if (!fs.is_open())
+	{
+		cout << "error, file wasn't open correctly" << endl;
+	}
+	else
+	{
+		cout << "file was opened correctly" << endl;
+		fs.getline(str, 250);// пока не достигнут конец файла класть очередную строку в переменную(str)
+		int s = Size_of_String(str);// s - длина str
+		int words = count_word(str, s);// количество слов в строке
+		int letters = count_longest(str, s, words);// количество букв в самом длинном слове
+		char**matrix = new char*[words];
+		for (int i(0); i < words; i++)
+		{
+			matrix[i] = new char[letters];
+		}
+		input_matrix(matrix, str, letters, s);
+		//вывожу массив в консоль
+		Output_matrix(words, letters, matrix);
+		cout << endl;
+		/*char**matrix2 = new char*[words];// новый массив откуда буду считывать данные в новый файл
+		for (int i(0); i < words; i++)
+		{
+			matrix2[i] = new char[letters];
+		}*/
+		string*matrix2 = new string[words];
+		deleting_and_writing(matrix2, matrix, words, letters, n);
+		ofstream fs2;
+		string path2 = "new_file_for_lab_6.txt";
+		fs2.open(path2);
+		if (!fs2.is_open())
+		{
+			cout << "error, file wasn't open correctly" << endl;
+		}
+		else
+		{
+			cout << "file was opened correctly" << endl;
+			string result="";
+			for (int i = 0; i < words; i++)
+			{
+				result = result + " " + matrix2[i];
+			}
+			fs2 << result;
+		}
+		fs2.close();
+		for (int i = 0; i < words; i++)
+		{
+			delete[] matrix[i];
+		}
+		delete[] matrix;
+
+		delete [] matrix2;
+		delete str;
+	}
+	fs.close();
+	return 0;
+}
